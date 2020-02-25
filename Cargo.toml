@@ -1,0 +1,11 @@
+[package]
+name = "rust-gcp-k8s-micro-server"
+version = "0.0.1"
+authors = ["Agent K <nikolalohinski@gmail.com>"]
+
+[dependencies]
+log = "0.4"
+fern = { version = "0.5", features = ["colored"] }
+chrono = "0.4"
+gotham = "0.4.0"
+http = "0.1.21"
