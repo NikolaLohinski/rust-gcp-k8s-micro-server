@@ -8,7 +8,7 @@ This is a simple Rust web server mock meant for running inside a K8S cluster wit
 * Create an environment variables file `.envrc` with the following content
 [source,sh]
 ----
-export LEVEL_VERBOSITY=2
+export RUST_LOG=info
 export SERVER_PORT=8080
 ----
 
@@ -32,4 +32,12 @@ export SERVER_PORT=8080
 [source,bash]
 ----
 Λ\: $ cargo run
+----
+
+* If you need to watch the server and reload on change:
+[source,bash]
+----
+Λ\: $ cargo install cargo-watch
+
+Λ\: $ cargo watch -x run
 ----

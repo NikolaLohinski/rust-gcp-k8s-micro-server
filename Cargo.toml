@@ -9,3 +9,4 @@ fern = { version = "0.5", features = ["colored"] }
 chrono = "0.4"
 gotham = "0.4.0"
 http = "0.1.21"
+stackdriver_logger = { version = "*", default-features = false, features = ["prod"] }

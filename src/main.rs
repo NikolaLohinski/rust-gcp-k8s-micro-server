@@ -1,21 +1,22 @@
-extern crate gotham;
 extern crate fern;
+extern crate gotham;
+extern crate stackdriver_logger;
 #[macro_use]
 extern crate log;
 
 use gotham::state::State;
+use log::info;
 
 mod config;
-use config::config::{level_verbosity, server_port};
-mod logger;
-use logger::logger::setup_logger;
+use config::config::server_port;
 
 fn main() {
-    setup_logger(level_verbosity()).expect("Failed to setup logger");
+    stackdriver_logger::init_with_cargo!();
     gotham::start(format!("127.0.0.1:{}", server_port()), || Ok(index))
 }
 
 pub fn index(state: State) -> (State, &'static str) {
+    info!("received request");
     (state, "Hello World!")
 }
 
@@ -25,8 +26,8 @@ mod tests {
 
     extern crate http;
 
-    use gotham::test::TestServer;
     use self::http::status::StatusCode;
+    use gotham::test::TestServer;
 
     #[test]
     fn receive_hello_world_response() {
