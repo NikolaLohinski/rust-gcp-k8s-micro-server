@@ -9,6 +9,10 @@ pub mod config {
         }
     }
 
+    pub fn health_port() -> String {
+        get_env_var("HEALTH_PORT".to_string()).expect("HEALTH_PORT is not defined")
+    }
+
     pub fn server_port() -> String {
         get_env_var("SERVER_PORT".to_string()).expect("SERVER_PORT is not defined")
     }

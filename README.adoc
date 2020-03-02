@@ -10,6 +10,7 @@ This is a simple Rust web server mock meant for running inside a K8S cluster wit
 ----
 export RUST_LOG=info
 export SERVER_PORT=8080
+export HEALTH_PORT=8080
 ----
 
 * Source the environment file
