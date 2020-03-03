@@ -12,60 +12,35 @@ use std::thread::spawn;
 use gotham::pipeline::new_pipeline;
 use gotham::pipeline::single::single_pipeline;
 use gotham::router::builder::*;
-use gotham::router::Router;
-use gotham::state::State;
 
 mod config;
-mod middleware;
+mod middlewares;
+mod routes;
+
 use config::config::{health_port, server_port};
-use middleware::middleware::LogIOMiddleware;
+use middlewares::log::LogIOMiddleware;
+use routes::index;
 
-fn router() -> Router {
-    let (chain, pipelines) = single_pipeline(new_pipeline().add(LogIOMiddleware).build());
-    build_router(chain, pipelines, |route| {
-        route.get("/").to(index);
-    })
-}
-
-fn main() {
-    stackdriver_logger::init_with_cargo!();
-
-    // Health check
+fn start_health_check() {
     spawn(move || {
         gotham::start(format!("127.0.0.1:{}", health_port()), || {
             Ok(|state| (state, "ok"))
         })
     });
-
-    // Application
-    gotham::start(format!("127.0.0.1:{}", server_port()), router());
 }
 
-pub fn index(state: State) -> (State, &'static str) {
-    (state, "Hello World!")
+fn start_application() {
+    let (chain, pipelines) = single_pipeline(new_pipeline().add(LogIOMiddleware).build());
+
+    let router = build_router(chain, pipelines, |route| {
+        route.get("/").to(index::handle);
+    });
+
+    gotham::start(format!("127.0.0.1:{}", server_port()), router);
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    extern crate http;
-
-    use self::http::status::StatusCode;
-    use gotham::test::TestServer;
-
-    #[test]
-    fn receive_hello_world_response() {
-        let test_server = TestServer::new(|| Ok(index)).unwrap();
-        let response = test_server
-            .client()
-            .get("http://localhost:8080")
-            .perform()
-            .unwrap();
-
-        assert_eq!(response.status(), StatusCode::OK);
-
-        let body = response.read_body().unwrap();
-        assert_eq!(&body[..], b"Hello World!");
-    }
+fn main() {
+    stackdriver_logger::init_with_cargo!();
+    start_health_check();
+    start_application();
 }
