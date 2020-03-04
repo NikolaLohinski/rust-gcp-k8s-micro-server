@@ -14,12 +14,12 @@ impl Middleware for LogIOMiddleware {
     where
         Chain: FnOnce(State) -> Box<HandlerFuture>,
     {
-        info!("request received");
+        info!("received request");
 
         let result = chain(state);
 
         let f = result.then(move |result| {
-            info!("request handled");
+            info!("handled request");
 
             match result {
                 Ok((state, response)) => future::ok((state, response)),
