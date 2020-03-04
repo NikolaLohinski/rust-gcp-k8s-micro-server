@@ -17,14 +17,14 @@ mod config;
 mod middlewares;
 mod routes;
 
-use config::config::{health_port, port, name, version};
-use middlewares::log::LogIOMiddleware;
+use config::config::{health_port, name, port, version};
+use middlewares::log_io;
 use routes::index;
 
 fn logging() {
-    let service = stackdriver_logger::Service{
+    let service = stackdriver_logger::Service {
         name: name(),
-        version: version()
+        version: version(),
     };
     stackdriver_logger::init_with(Some(service), false);
 }
@@ -38,7 +38,7 @@ fn health_check() {
 }
 
 fn application() {
-    let (chain, pipelines) = single_pipeline(new_pipeline().add(LogIOMiddleware).build());
+    let (chain, pipelines) = single_pipeline(new_pipeline().add(log_io::Middleware).build());
 
     let router = build_router(chain, pipelines, |route| {
         route.get("/").to(index::handle);

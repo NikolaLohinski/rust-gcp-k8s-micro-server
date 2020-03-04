@@ -12,7 +12,6 @@ mod tests {
 
     extern crate http;
     use self::http::status::StatusCode;
-
     use gotham::test::TestServer;
 
     #[test]
