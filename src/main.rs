@@ -6,6 +6,10 @@ extern crate futures;
 extern crate hyper;
 extern crate log;
 extern crate stackdriver_logger;
+#[macro_use]
+extern crate serde_derive;
+extern crate alloc;
+extern crate http;
 
 use std::thread::spawn;
 
@@ -18,7 +22,7 @@ mod middlewares;
 mod routes;
 
 use config::config::{health_port, name, port, version};
-use middlewares::log_io;
+use middlewares::{configuration, log_io};
 use routes::index;
 
 fn logging() {
@@ -38,7 +42,12 @@ fn health_check() {
 }
 
 fn application() {
-    let (chain, pipelines) = single_pipeline(new_pipeline().add(log_io::Middleware).build());
+    let (chain, pipelines) = single_pipeline(
+        new_pipeline()
+            .add(log_io::Middleware)
+            .add(configuration::Middleware)
+            .build(),
+    );
 
     let router = build_router(chain, pipelines, |route| {
         route.get("/").to(index::handle);

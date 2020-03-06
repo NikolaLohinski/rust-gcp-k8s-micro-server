@@ -1,9 +1,8 @@
-use log::info;
-
 use futures::future;
 use futures::prelude::*;
 use gotham::handler::{HandlerFuture, IntoResponse};
 use gotham::state::State;
+use log::info;
 
 #[derive(Clone, NewMiddleware)]
 pub struct Middleware;
