@@ -8,18 +8,22 @@ fn get_env_var(key: String) -> Option<String> {
     }
 }
 
+pub const ENV_HEALTH_PORT: &str = "SERVICE_HEALTH_PORT";
 pub fn health_port() -> String {
-    get_env_var("SERVICE_HEALTH_PORT".to_string()).expect("SERVICE_HEALTH_PORT is not defined")
+    get_env_var(ENV_HEALTH_PORT.to_string()).unwrap()
 }
 
+pub const ENV_PORT: &str = "SERVICE_PORT";
 pub fn port() -> String {
-    get_env_var("SERVICE_PORT".to_string()).expect("SERVICE_PORT is not defined")
+    get_env_var(ENV_PORT.to_string()).unwrap()
 }
 
+pub const ENV_NAME: &str = "SERVICE_NAME";
 pub fn name() -> String {
-    get_env_var("SERVICE_NAME".to_string()).expect("SERVICE_NAME is not defined")
+    get_env_var(ENV_NAME.to_string()).unwrap()
 }
 
+pub const ENV_VERSION: &str = "SERVICE_VERSION";
 pub fn version() -> String {
-    get_env_var("SERVICE_VERSION".to_string()).expect("SERVICE_VERSION is not defined")
+    get_env_var(ENV_VERSION.to_string()).unwrap()
 }
