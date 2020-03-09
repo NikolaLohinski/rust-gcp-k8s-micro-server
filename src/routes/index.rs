@@ -1,3 +1,4 @@
+use chrono::Utc;
 use gotham::handler::IntoResponse;
 use gotham::helpers::http::response::create_response;
 use gotham::state::{FromState, State};
@@ -10,6 +11,7 @@ use middlewares::configuration::Configuration;
 #[derive(Serialize)]
 pub struct IndexResponse {
     from: String,
+    date: String,
 }
 
 impl IntoResponse for IndexResponse {
@@ -27,6 +29,7 @@ pub fn handle(mut state: State) -> (State, IndexResponse) {
     let configuration = Configuration::borrow_mut_from(&mut state);
     let response = IndexResponse {
         from: format!("{} (v{})", configuration.name, configuration.version),
+        date: Utc::now().to_rfc3339(),
     };
     (state, response)
 }
@@ -60,10 +63,9 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
 
         let body = response.read_body().unwrap();
-        assert_eq!(
-            std::str::from_utf8(&body[..]).unwrap(),
-            r#"{"from":"test (vα)"}"#
-        );
+        assert!(std::str::from_utf8(&body[..])
+            .unwrap()
+            .contains(r#""from":"test (vα)""#),);
     }
 
     #[test]

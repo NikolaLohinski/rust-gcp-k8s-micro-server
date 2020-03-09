@@ -75,7 +75,7 @@ mod tests {
         for line in BufReader::new(file).lines() {
             lines = lines + line.unwrap().as_ref();
         }
-        assert_eq!(lines.contains("received request"), true);
-        assert_eq!(lines.contains("handled request"), true);
+        assert!(lines.contains("received request"));
+        assert!(lines.contains("handled request"));
     }
 }

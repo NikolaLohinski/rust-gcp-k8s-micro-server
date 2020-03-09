@@ -9,7 +9,9 @@ extern crate stackdriver_logger;
 #[macro_use]
 extern crate serde_derive;
 extern crate alloc;
+extern crate chrono;
 extern crate http;
+extern crate serde;
 
 use std::thread::spawn;
 
