@@ -34,19 +34,19 @@ impl gotham::middleware::Middleware for Middleware {
 
 #[cfg(test)]
 mod tests {
+    extern crate tempfile;
+
     use super::*;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
 
-    extern crate http;
-    extern crate tempfile;
-
-    use self::http::status::StatusCode;
     use self::tempfile::NamedTempFile;
     use gotham::pipeline::new_pipeline;
     use gotham::pipeline::single::single_pipeline;
     use gotham::router::builder::*;
     use gotham::test::TestServer;
+    use hamcrest::prelude::*;
+    use http::status::StatusCode;
     use log::LevelFilter;
 
     #[test]
@@ -68,14 +68,14 @@ mod tests {
             .perform()
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_that!(response.status(), is(equal_to(StatusCode::OK)));
 
         let file = File::open(path).unwrap();
         let mut lines = String::new();
         for line in BufReader::new(file).lines() {
             lines = lines + line.unwrap().as_ref();
         }
-        assert!(lines.contains("received request"));
-        assert!(lines.contains("handled request"));
+        assert_that!(lines.contains("received request"), is(true));
+        assert_that!(lines.contains("handled request"), is(true));
     }
 }

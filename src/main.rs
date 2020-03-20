@@ -1,3 +1,13 @@
+#[cfg(test)]
+#[macro_use]
+extern crate hamcrest;
+#[cfg(test)]
+#[macro_use]
+extern crate assert_json_diff;
+#[cfg(test)]
+#[macro_use]
+extern crate serde_json;
+
 extern crate fern;
 extern crate gotham;
 #[macro_use]

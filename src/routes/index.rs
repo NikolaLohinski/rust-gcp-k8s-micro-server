@@ -1,4 +1,4 @@
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use gotham::handler::IntoResponse;
 use gotham::helpers::http::response::create_response;
 use gotham::state::{FromState, State};
@@ -11,7 +11,7 @@ use middlewares::configuration::Configuration;
 #[derive(Serialize)]
 pub struct IndexResponse {
     from: String,
-    date: String,
+    date: DateTime<Utc>,
 }
 
 impl IntoResponse for IndexResponse {
@@ -29,7 +29,7 @@ pub fn handle(mut state: State) -> (State, IndexResponse) {
     let configuration = Configuration::borrow_mut_from(&mut state);
     let response = IndexResponse {
         from: format!("{} (v{})", configuration.name, configuration.version),
-        date: Utc::now().to_rfc3339(),
+        date: Utc::now(),
     };
     (state, response)
 }
@@ -38,9 +38,9 @@ pub fn handle(mut state: State) -> (State, IndexResponse) {
 mod tests {
     use super::*;
 
-    extern crate http;
-    use self::http::status::StatusCode;
     use gotham::test::TestServer;
+    use hamcrest::prelude::*;
+    use http::status::StatusCode;
 
     #[test]
     fn receive_default_response() {
@@ -60,12 +60,15 @@ mod tests {
             .perform()
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_that!(response.status(), is(equal_to(StatusCode::OK)));
 
         let body = response.read_body().unwrap();
-        assert!(std::str::from_utf8(&body[..])
-            .unwrap()
-            .contains(r#""from":"test (vα)""#),);
+        assert_json_include!(
+            actual: serde_json::from_str(std::str::from_utf8(&body[..]).unwrap()).unwrap(),
+            expected: json!({
+                "from":"test (vα)"
+            })
+        );
     }
 
     #[test]
@@ -76,6 +79,9 @@ mod tests {
             .get("http://localhost:8080")
             .perform()
             .unwrap();
-        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert_that!(
+            response.status(),
+            is(equal_to(StatusCode::INTERNAL_SERVER_ERROR))
+        );
     }
 }

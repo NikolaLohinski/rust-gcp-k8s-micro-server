@@ -30,14 +30,13 @@ impl gotham::middleware::Middleware for Middleware {
 mod tests {
     use super::*;
 
-    extern crate http;
-
-    use self::http::status::StatusCode;
     use gotham::pipeline::new_pipeline;
     use gotham::pipeline::single::single_pipeline;
     use gotham::router::builder::*;
     use gotham::state::FromState;
     use gotham::test::TestServer;
+    use hamcrest::prelude::*;
+    use http::status::StatusCode;
 
     use config::config::ENV_NAME;
     use config::config::ENV_VERSION;
@@ -66,12 +65,12 @@ mod tests {
             .perform()
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_that!(response.status(), is(equal_to(StatusCode::OK)));
 
         let body = response.read_body().unwrap();
-        assert_eq!(
+        assert_that!(
             std::str::from_utf8(&body[..]).unwrap(),
-            "name=test,version=0.1"
+            is(equal_to("name=test,version=0.1"))
         );
     }
 }
