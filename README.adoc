@@ -1,6 +1,6 @@
-= 🦀 Rust GPC K8S Micro-server
+= 🦀 Rust GCP K8S Micro-server
 
-This is a simple Rust web server mock meant for running inside a K8S cluster with Stackdriver log formatting for demo purposes.
+This is a simple Rust web server mock meant for running inside a GKE cluster with Stackdriver log formatting for demo purposes.
 
 == Quickstart
 * Install Rust (`>= 1.39.0`)
